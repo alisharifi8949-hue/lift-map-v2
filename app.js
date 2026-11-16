@@ -98,6 +98,7 @@ function mapView(hl){
 /* ---------- Leaflet map ---------- */
 let liftMapInstance = null;
 
+
 function initLeafletMap(){
   const el = document.getElementById("leaflet-map");
   if(!el)return;
@@ -112,22 +113,29 @@ function initLeafletMap(){
     liftMapInstance = null;
   }
 
-  const pts = vis().filter(p=>p.lat!=null&&p.lng!=null);
+  const pts = vis().filter(p=>
+    Number.isFinite(Number(p.lat)) &&
+    Number.isFinite(Number(p.lng))
+  );
+
   if(!pts.length)return;
 
-  const map = L.map(el).setView(
-    [pts[0].lat,pts[0].lng],13
+  const map = L.map(el,{
+    zoomControl:true,
+    preferCanvas:true
+  }).setView(
+    [Number(pts[0].lat),Number(pts[0].lng)],13
   );
 
   liftMapInstance = map;
 
- L.tileLayer(
-  "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-  {
-    maxZoom:19,
-    attribution:'&copy; OpenStreetMap'
-  }
-).addTo(map);
+  L.tileLayer(
+    "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+    {
+      maxZoom:19,
+      attribution:'&copy; OpenStreetMap'
+    }
+  ).addTo(map);
 
   const bounds = [];
 
@@ -138,8 +146,11 @@ function initLeafletMap(){
       hl:"#8b5cf6"
     };
 
+    const lat = Number(p.lat);
+    const lng = Number(p.lng);
+
     const marker = L.circleMarker(
-      [p.lat,p.lng],
+      [lat,lng],
       {
         radius:10,
         color:"#ffffff",
@@ -149,29 +160,26 @@ function initLeafletMap(){
       }
     ).addTo(map);
 
-    marker.bindTooltip(p.name);
+    marker.bindTooltip(p.name || "");
 
     marker.on("click",()=>{
       showDetail(p.id);
     });
 
-    bounds.push([p.lat,p.lng]);
+    bounds.push([lat,lng]);
   });
 
   if(bounds.length>1){
-    map.fitBounds(bounds,{padding:[35,35],maxZoom:16});
+    map.fitBounds(bounds,{
+      padding:[35,35],
+      maxZoom:16
+    });
   }
 
   requestAnimationFrame(()=>{
     map.invalidateSize();
   });
 }
-
-
-/* ---------- sheet ---------- */
-function openSheet(h){$("#panel").innerHTML=h;$("#sheet").classList.add("show")}
-function closeSheet(){$("#sheet").classList.remove("show")}
-$("#sheet").onclick=e=>{if(e.target.id==="sheet")closeSheet()};
 
 function showDetail(id){
   const p=items.find(x=>x.id===id);if(!p)return;
