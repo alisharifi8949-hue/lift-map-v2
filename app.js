@@ -86,7 +86,7 @@ function mapView(hl){
   return `
     <div id="leaflet-map"
       class="mapbox"
-      style="width:100%;height:500px;border-radius:14px;z-index:1">
+      style="width:100%;height:500px;min-height:350px;position:relative;z-index:1"
     </div>
     <div class="note">
       🔵 آسانسور &nbsp; 🟠 بالابر &nbsp; 🟣 هوم لیفت
