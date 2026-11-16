@@ -203,7 +203,14 @@ function showDetail(id){
 function viewImg(s){$("#vimg").src=s;$("#viewer").style.display="flex"}
 $("#viewer").onclick=()=>$("#viewer").style.display="none";
 
+function openSheet(h){
+  $("#panel").innerHTML=h;
+  $("#sheet").classList.add("show");
+}
 
+function closeSheet(){
+  $("#sheet").classList.remove("show");
+}
 function form(p){
   draft=p?Object.assign({},p,{
     photos:(p.photos||[]).slice(),
