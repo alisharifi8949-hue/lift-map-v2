@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>نقشه آسانسور و بالابر</title>
+<meta name="description" content="ثبت و نمایش نمونه‌کارهای آسانسور، بالابر و هوم لیفت روی نقشه">
+<meta name="theme-color" content="#1d6fe8">
+<meta name="color-scheme" content="light dark">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAADBUlEQVR4nO3d0Y3bRhRA0dkgPeTLadEuJTXmy+7CHwsYgq27pkjvajg8pwBpiHdFEAKHfPn0+euAe/569gKYlzhI4iCJgyQOkjhI4iCJgyQOkjhI4iCJgyQOkjhI4iCJgyQOkjhI4iCJgyQOkjhI4iCJgyQOkjhI4iCJgyQOkjhI4iCJgyQO0t/PXsBv/P/fP89ewvv698u3Zy8hvUz72Kfls7g1ZyKTxvGUMn5M6LnfPo8Zrzkudc74YcKjnjEOJjFdHBP+gD7MbMc+XRzMQxwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHadk4Jnzm6+msGcdrGfo4aME4bpvQxxGrxaGGP2ipOO6WIZfd1onjjQj0sc86cbxNHzssEseW2evjUSvEsX3q+njI6eMw7/dz7jh2lCGm7U4cx+4x62Ojs8ZxcMD62GL298qWj3zj1fGSZns/10ZnPXN8pIOjPWkZQxwb7R7wecsY4thux5hPXcYQx/s5exlDHA/ZPu8FyhjieNSWqa9RxhDHDsvM/rfEsccbfayUjjh2uhvBSmUMcfxBi5UxxHHEbQ3rlTHEcdBrE0uWMcRx3KplDHHwBnGQxEESB0kcJHGQxEESB+msd58/6vYO8n1/Wx3/hNO5xJnjp70Fx/fJXWTby/pxHH+iy2WfCbN+HOwmDpI4SOvHcfx+vivcEXjX+nGMXwZ5fO/aFcoY1/mf4/g4LxLErUucOdhHHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdpujiusAe1zHbs08VxWbOVMcZ4+fT567PXcMcFN4mI4wHX6WPCLF7NG8er5ROZtowxfxw8kQtSkjhI4iCJgyQOkjhI4iCJgyQOkjhI4iCJgyQOkjhI4iCJgyQOkjhI4iCJgyQOkjhI4iCJgyQOkjhI4iCJgyQOkjhI4iCJg/QdVxGSujp98EsAAAAASUVORK5CYII=">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="نقشه آسانسور">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+  <header><h1 id="ttl">🏗️ نقشه آسانسور و بالابر</h1><div class="row"><button class="btn" id="pl0" aria-label="نمایش">🎬</button><button class="btn" id="se" aria-label="تنظیمات">⚙️</button><button class="btn" id="bk">پشتیبان</button></div></header>
+  <div class="tabs"><button class="tab on" data-t="map">نقشه</button><button class="tab" data-t="list">فهرست</button></div>
+  <main id="main"></main>
+</div>
+<button class="fab" id="add" aria-label="افزودن">+</button>
+<div class="sheet" id="sheet"><div class="panel" id="panel"></div></div>
+<div id="show"></div>
+<div id="viewer"><img id="vimg" alt=""></div>
+
+
+<noscript><p style="padding:20px;text-align:center">برای استفاده از برنامه، جاوااسکریپت باید فعال باشد.</p></noscript>
+<script src="app.js"></script>
+</body>
+</html>
