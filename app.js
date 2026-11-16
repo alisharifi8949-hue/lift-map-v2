@@ -63,12 +63,45 @@ $("#se").onclick=()=>{openSheet(`<h2 style="margin:0 0 8px">⚙️ تنظیما�
   <p class="mu">برای دسترسی سریع، لینک برنامه را به صفحهٔ اصلی گوشی اضافه کنید. با گذاشتن <b>#showcase</b> آخر لینک هم مستقیم وارد حالت نمایش می‌شود.</p>
   <div class="row"><button class="btn p" id="s_ok" style="flex:1">ذخیره</button><button class="btn" id="s_cl">بستن</button></div>`);
   $("#s_th").value=S.th;$("#s_tab").value=S.tab;$("#s_hc").checked=S.hc;$("#s_st").checked=S.start;$("#s_cl").onclick=closeSheet;
-  $("#s_ok").onclick=()=>{S.co=$("#s_co").value.trim();S.ph=$("#s_ph").value.trim();S.th=$("#s_th").value;S.tab=$("#s_tab").value;S.hc=$("#s_hc").checked;S.start=$("#s_st").checked;try{localStorage.setItem("lm_s",JSON.stringify(S))}catch(e){}applyS();closeSheet()}};
+ $("#s_ok").onclick=()=>{S.co=$("#s_co").value.trim();S.ph=$("#s_ph").value.trim();S.th=$("#s_th").value;S.tab=$("#s_tab").value;S.hc=$("#s_hc").checked;S.start=$("#s_st").checked;try{localStorage.setItem("lm_s",JSON.stringify(S))}catch(e){}applyS();closeSheet()}};
+
+function projectStats(){
+  const total = items.length;
+
+  const el = items.filter(p => p.type === "el").length;
+  const li = items.filter(p => p.type === "li").length;
+  const hl = items.filter(p => p.type === "hl").length;
+
+  return `
+    <div class="project-stats">
+      <div class="stat-card stat-el">
+        <strong>${el.toLocaleString("fa-IR")}</strong>
+        <span>آسانسور</span>
+      </div>
+
+      <div class="stat-card stat-li">
+        <strong>${li.toLocaleString("fa-IR")}</strong>
+        <span>بالابر</span>
+      </div>
+
+      <div class="stat-card stat-hl">
+        <strong>${hl.toLocaleString("fa-IR")}</strong>
+        <span>هوم لیفت</span>
+      </div>
+
+      <div class="stat-card stat-total">
+        <strong>${total.toLocaleString("fa-IR")}</strong>
+        <span>کل پروژه‌ها</span>
+      </div>
+    </div>
+  `;
+}
+
 function render(){
   document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("on",b.dataset.t===tab));
   const m=$("#main");
   if(!items.length){m.innerHTML='<div class="empty">هنوز پروژه‌ای ثبت نشده.<br>با دکمه + اولین مورد را اضافه کنید.</div>';return}
-m.innerHTML=chips()+'<div id="vw">'+((tab==="map"?mapView():listView())||'<div class="empty">موردی پیدا نشد</div>')+'</div>';
+m.innerHTML=projectStats()+chips()+'<div id="vw">'+((tab==="map"?mapView():listView())||'<div class="empty">موردی پیدا نشد</div>')+'</div>';
 bind();
 if(tab==="map")initLeafletMap();
 }
@@ -543,3 +576,38 @@ document.getElementById("add").addEventListener("click",function(){
     });
   }
 })();
+
+.project-stats{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:7px;
+  margin:12px 0;
+}
+
+.stat-card{
+  padding:12px 4px;
+  border-radius:12px;
+  text-align:center;
+  background:var(--card);
+  border:1px solid var(--bd);
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+  min-width:0;
+}
+
+.stat-card strong{
+  font-size:22px;
+  font-weight:800;
+  direction:ltr;
+}
+
+.stat-card span{
+  font-size:11px;
+  color:var(--mu);
+}
+
+.stat-el strong{color:#1d6fe8}
+.stat-li strong{color:#e8832a}
+.stat-hl strong{color:#8b5cf6}
+.stat-total strong{color:var(--tx)}
