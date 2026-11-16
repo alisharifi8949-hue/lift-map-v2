@@ -121,13 +121,13 @@ function initLeafletMap(){
 
   liftMapInstance = map;
 
-  L.tileLayer(
-    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-    {
-      maxZoom:19,
-      attribution:'&copy; OpenStreetMap'
-    }
-  ).addTo(map);
+ L.tileLayer(
+  "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+  {
+    maxZoom:19,
+    attribution:'&copy; OpenStreetMap'
+  }
+).addTo(map);
 
   const bounds = [];
 
