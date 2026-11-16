@@ -76,22 +76,23 @@ function listView(){
   <div><b>${esc(p.name)}</b><span class="badge" style="background:${TYPES[p.type].c}">${TYPES[p.type].n}</span>
   <div class="mu">${esc(p.client||"")} ${p.status?"· "+esc(p.status):""} ${(p.videos||[]).length?"· 🎥 "+p.videos.length:""}</div></div></div>`).join("");
 }
+
 function mapView(hl){
   const pts=vis().filter(p=>p.lat!=null&&p.lng!=null);
   if(!pts.length)return listView();
-  const W=400,H=500,pad=40;
-  let la=pts.map(p=>p.lat),lo=pts.map(p=>p.lng);
-  let minA=Math.min(...la),maxA=Math.max(...la),minO=Math.min(...lo),maxO=Math.max(...lo);
-  const dA=Math.max(maxA-minA,0.002),dO=Math.max(maxO-minO,0.002);
-  const cosk=Math.cos((minA+maxA)/2*Math.PI/180);
-  const sc=Math.min((W-2*pad)/(dO*cosk),(H-2*pad)/dA);
-  const cx=(minO+maxO)/2,cy=(minA+maxA)/2;
-  const X=o=>W/2+(o-cx)*cosk*sc,Y=a=>H/2-(a-cy)*sc;
-  let g="";for(let i=1;i<8;i++){g+=`<line x1="${i*W/8}" y1="0" x2="${i*W/8}" y2="${H}" stroke="var(--bd)"/><line x1="0" y1="${i*H/8}" x2="${W}" y2="${i*H/8}" stroke="var(--bd)"/>`}
-  const mk=pts.map(p=>`<g data-id="${p.id}" style="cursor:pointer">${hl===p.id?`<circle cx="${X(p.lng)}" cy="${Y(p.lat)}" r="26" fill="${TYPES[p.type].c}" opacity=".25"/>`:""}<circle cx="${X(p.lng)}" cy="${Y(p.lat)}" r="${hl===p.id?18:14}" fill="${TYPES[p.type].c}" stroke="#fff" stroke-width="3" opacity="${hl&&hl!==p.id?.45:1}"/><text x="${X(p.lng)}" y="${Y(p.lat)-20}" text-anchor="middle" font-size="12" fill="var(--tx)">${esc(p.name.slice(0,14))}</text></g>`).join("");
-  return `<div class="mapbox"><svg viewBox="0 0 ${W} ${H}">${g}${mk}</svg></div>
-  <div class="note">🔵 آسانسور &nbsp; 🟠 بالابر &nbsp; 🟣 هوم لیفت — روی هر نقطه بزنید. این نمای شماتیک مکان‌هاست؛ برای نقشهٔ خیابانی، در جزئیات هر پروژه «باز کردن در گوگل‌مپ» را بزنید.</div>`;
+
+  return `
+    <div id="leaflet-map"
+      class="mapbox"
+      style="width:100%;height:500px;border-radius:14px;z-index:1">
+    </div>
+    <div class="note">
+      🔵 آسانسور &nbsp; 🟠 بالابر &nbsp; 🟣 هوم لیفت
+      <br>برای مشاهده جزئیات، روی نشانگر پروژه بزنید.
+    </div>
+  `;
 }
+
 
 /* ---------- sheet ---------- */
 function openSheet(h){$("#panel").innerHTML=h;$("#sheet").classList.add("show")}
