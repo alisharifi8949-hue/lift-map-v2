@@ -74,3 +74,24 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--bd);border-
 #viewer{position:fixed;inset:0;background:#000e;display:none;align-items:center;justify-content:center;z-index:30}
 #viewer img{max-width:96%;max-height:92%}
 .empty{text-align:center;color:var(--mu);padding:40px 10px}
+#leaflet-map{
+  width:100%;
+  height:500px;
+  min-height:350px;
+  position:relative;
+  overflow:hidden;
+}
+
+#leaflet-map .leaflet-pane{
+  z-index:400;
+}
+
+#leaflet-map .leaflet-tile{
+  max-width:none !important;
+  max-height:none !important;
+}
+
+#leaflet-map .leaflet-container img{
+  max-width:none !important;
+  max-height:none !important;
+}
