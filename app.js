@@ -515,7 +515,14 @@ $("#bk").onclick=()=>{
 };
 
 document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{tab=b.dataset.t;render()});
-$("#add").onclick=()=>form(null);
+document.getElementById("add").addEventListener("click",function(){
+  try{
+    form(null);
+  }catch(e){
+    console.error("Add project error:",e);
+    alert("خطا در باز کردن فرم پروژه جدید: "+e.message);
+  }
+});
 (async()=>{applyS();tab=S.tab;await openDB();items=await loadAll();render();if(S.start||location.hash==="#showcase")showcase(0)})();
 
 /* ثبت Service Worker (کار آفلاین + نصب روی صفحهٔ اصلی) و درخواست ذخیرهٔ ماندگار */
