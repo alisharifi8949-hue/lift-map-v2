@@ -68,7 +68,9 @@ function render(){
   document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("on",b.dataset.t===tab));
   const m=$("#main");
   if(!items.length){m.innerHTML='<div class="empty">هنوز پروژه‌ای ثبت نشده.<br>با دکمه + اولین مورد را اضافه کنید.</div>';return}
-  m.innerHTML=chips()+'<div id="vw">'+((tab==="map"?mapView():listView())||'<div class="empty">موردی پیدا نشد</div>')+'</div>';bind();
+m.innerHTML=chips()+'<div id="vw">'+((tab==="map"?mapView():listView())||'<div class="empty">موردی پیدا نشد</div>')+'</div>';
+bind();
+if(tab==="map")initLeafletMap();
 }
 function listView(){
   return vis().sort((a,b)=>b.id.localeCompare(a.id)).map(p=>`<div class="card" data-id="${p.id}">
@@ -91,6 +93,78 @@ function mapView(hl){
       <br>برای مشاهده جزئیات، روی نشانگر پروژه بزنید.
     </div>
   `;
+}
+/* ---------- sheet ---------- */
+/* ---------- Leaflet map ---------- */
+let liftMapInstance = null;
+
+function initLeafletMap(){
+  const el = document.getElementById("leaflet-map");
+  if(!el)return;
+
+  if(typeof L === "undefined"){
+    el.innerHTML = "نقشه بارگذاری نشد. اتصال اینترنت را بررسی کنید.";
+    return;
+  }
+
+  if(liftMapInstance){
+    liftMapInstance.remove();
+    liftMapInstance = null;
+  }
+
+  const pts = vis().filter(p=>p.lat!=null&&p.lng!=null);
+  if(!pts.length)return;
+
+  const map = L.map(el).setView(
+    [pts[0].lat,pts[0].lng],13
+  );
+
+  liftMapInstance = map;
+
+  L.tileLayer(
+    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    {
+      maxZoom:19,
+      attribution:'&copy; OpenStreetMap'
+    }
+  ).addTo(map);
+
+  const bounds = [];
+
+  pts.forEach(p=>{
+    const colors = {
+      el:"#1d6fe8",
+      li:"#e8832a",
+      hl:"#8b5cf6"
+    };
+
+    const marker = L.circleMarker(
+      [p.lat,p.lng],
+      {
+        radius:10,
+        color:"#ffffff",
+        weight:3,
+        fillColor:colors[p.type]||"#1d6fe8",
+        fillOpacity:1
+      }
+    ).addTo(map);
+
+    marker.bindTooltip(p.name);
+
+    marker.on("click",()=>{
+      showDetail(p.id);
+    });
+
+    bounds.push([p.lat,p.lng]);
+  });
+
+  if(bounds.length>1){
+    map.fitBounds(bounds,{padding:[35,35],maxZoom:16});
+  }
+
+  requestAnimationFrame(()=>{
+    map.invalidateSize();
+  });
 }
 
 
