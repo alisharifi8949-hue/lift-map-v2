@@ -342,10 +342,10 @@ function form(p){
       zoomControl:true
     }).setView(initial,hasPoint?16:13);
 
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{
-      maxZoom:19,
-      attribution:'&copy; OpenStreetMap'
-    }).addTo(map);
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{
+  maxZoom:19,
+  attribution:'&copy; OpenStreetMap'
+}).addTo(map);
 
     if(hasPoint){
       marker=L.marker(initial,{draggable:true}).addTo(map);
