@@ -195,50 +195,297 @@ function showDetail(id){
 function viewImg(s){$("#vimg").src=s;$("#viewer").style.display="flex"}
 $("#viewer").onclick=()=>$("#viewer").style.display="none";
 
+
 function form(p){
-  draft=p?Object.assign({},p,{photos:(p.photos||[]).slice(),videos:(p.videos||[]).slice()}):{id:Date.now().toString(36),type:"el",name:"",client:"",spec:"",status:STAT[0],date:"",notes:"",lat:null,lng:null,photos:[],videos:[]};
+  draft=p?Object.assign({},p,{
+    photos:(p.photos||[]).slice(),
+    videos:(p.videos||[]).slice()
+  }):{
+    id:Date.now().toString(36),type:"el",name:"",
+    client:"",spec:"",status:STAT[0],date:"",
+    notes:"",lat:null,lng:null,photos:[],videos:[]
+  };
+
   const d=draft;
+
   openSheet(`<h2 style="margin:0">${p?"ویرایش":"پروژه جدید"}</h2>
-  <label>نام پروژه</label><input id="f_name" value="${esc(d.name)}">
-  <label>نوع</label><select id="f_type"><option value="el">آسانسور</option><option value="li">بالابر</option><option value="hl">هوم لیفت</option></select>
-  <label>کارفرما</label><input id="f_client" value="${esc(d.client)}">
-  <label>ظرفیت / مشخصات</label><input id="f_spec" value="${esc(d.spec)}" placeholder="مثلاً ۸ نفره، ۶ توقف">
-  <div class="row"><div style="flex:1"><label>وضعیت</label><select id="f_status">${STAT.map(s=>`<option>${s}</option>`).join("")}</select></div>
-  <div style="flex:1"><label>تاریخ نصب</label><input id="f_date" value="${esc(d.date)}" placeholder="۱۴۰۵/۰۸/۲۳"></div></div>
-  <label>موقعیت</label>
-  <div class="row"><input id="f_lat" inputmode="decimal" placeholder="عرض جغرافیایی" value="${d.lat??""}"><input id="f_lng" inputmode="decimal" placeholder="طول جغرافیایی" value="${d.lng??""}"></div>
-  <button class="btn" id="gps" style="margin-top:8px;width:100%">📍 ثبت موقعیت فعلی من</button>
-  <div class="row" style="margin-top:8px"><a class="btn" id="omap" href="https://www.google.com/maps" target="_blank" rel="noopener" style="flex:1;text-align:center;text-decoration:none">🗺️ انتخاب روی نقشه</a><button class="btn" id="pst" style="flex:1">📋 چسباندن موقعیت</button></div>
-  <div class="mu" id="gpsmsg"></div>
-  <label>توضیحات</label><textarea id="f_notes" rows="3">${esc(d.notes)}</textarea>
-  <label>عکس‌ها</label><input type="file" id="f_ph" accept="image/*" multiple>
+  <label>نام پروژه</label>
+  <input id="f_name" value="${esc(d.name)}">
+
+  <label>نوع</label>
+  <select id="f_type">
+    <option value="el">آسانسور</option>
+    <option value="li">بالابر</option>
+    <option value="hl">هوم لیفت</option>
+  </select>
+
+  <label>کارفرما</label>
+  <input id="f_client" value="${esc(d.client)}">
+
+  <label>ظرفیت / مشخصات</label>
+  <input id="f_spec" value="${esc(d.spec)}" placeholder="مثلاً ۸ نفره، ۶ توقف">
+
+  <div class="row">
+    <div style="flex:1">
+      <label>وضعیت</label>
+      <select id="f_status">
+        ${STAT.map(s=>`<option>${s}</option>`).join("")}
+      </select>
+    </div>
+    <div style="flex:1">
+      <label>تاریخ نصب</label>
+      <input id="f_date" value="${esc(d.date)}" placeholder="۱۴۰۵/۰۸/۲۳">
+    </div>
+  </div>
+
+  <label>موقعیت پروژه روی نقشه</label>
+  <div id="projectMap" style="height:300px;width:100%;border-radius:12px;overflow:hidden;margin:8px 0;border:1px solid var(--bd);direction:ltr"></div>
+
+  <div class="mu" id="gpsmsg">
+    روی نقشه لمس کن تا موقعیت پروژه انتخاب شود. نشانگر را هم می‌توانی جابه‌جا کنی.
+  </div>
+
+  <div class="row">
+    <input id="f_lat" inputmode="decimal" placeholder="عرض جغرافیایی" value="${d.lat??""}">
+    <input id="f_lng" inputmode="decimal" placeholder="طول جغرافیایی" value="${d.lng??""}">
+  </div>
+
+  <button class="btn" id="gps" style="margin-top:8px;width:100%">
+    📍 ثبت موقعیت فعلی من
+  </button>
+
+  <label>توضیحات</label>
+  <textarea id="f_notes" rows="3">${esc(d.notes)}</textarea>
+
+  <label>عکس‌ها</label>
+  <input type="file" id="f_ph" accept="image/*" multiple>
   <div class="photos" id="pv"></div>
-  <label>ویدیوها</label><input type="file" id="f_vid" accept="video/*" multiple>
-  <div class="mu">ویدیوها فقط روی همین دستگاه ذخیره می‌شوند و در «پشتیبان» متنی نیستند. حجم زیاد حافظهٔ مرورگر را پر می‌کند.</div>
+
+  <label>ویدیوها</label>
+  <input type="file" id="f_vid" accept="video/*" multiple>
+  <div class="mu">ویدیوها فقط روی همین دستگاه ذخیره می‌شوند و در «پشتیبان» متنی نیستند. حجم زیاد حافظه مرورگر را پر می‌کند.</div>
   <div id="vv"></div>
-  <div class="row" style="margin-top:16px"><button class="btn p" id="sv" style="flex:1">ذخیره</button>
-  ${p?'<button class="btn d" id="rm">حذف</button>':""}<button class="btn" id="cn">انصراف</button></div>`);
-  $("#f_type").value=d.type;$("#f_status").value=d.status;
-  pv();vv();
-  $("#f_vid").onchange=e=>{for(const f of e.target.files){if(f.size>150*1024*1024&&!confirm("این ویدیو بزرگ است (بیش از ۱۵۰ مگابایت) و ممکن است ذخیره نشود. ادامه می‌دهید؟"))continue;d.videos.push(new Blob([f],{type:f.type||"video/mp4"}))}e.target.value="";vv()};
-  $("#f_ph").onchange=async e=>{for(const f of e.target.files)d.photos.push(await resize(f));e.target.value="";pv()};
-  $("#gps").onclick=()=>{const m=$("#gpsmsg");m.textContent="در حال دریافت موقعیت…";
-    if(!navigator.geolocation){m.textContent="مرورگر از GPS پشتیبانی نمی‌کند؛ مختصات را دستی وارد کنید.";return}
-    navigator.geolocation.getCurrentPosition(r=>{$("#f_lat").value=r.coords.latitude.toFixed(6);$("#f_lng").value=r.coords.longitude.toFixed(6);m.textContent="ثبت شد ✓"},()=>m.textContent="دسترسی به موقعیت ممکن نشد. مجوز مکان را بدهید یا مختصات را دستی وارد کنید.",{enableHighAccuracy:true,timeout:15000})};
+
+  <div class="row" style="margin-top:16px">
+    <button class="btn p" id="sv" style="flex:1">ذخیره</button>
+    ${p?'<button class="btn d" id="rm">حذف</button>':""}
+    <button class="btn" id="cn">انصراف</button>
+  </div>`);
+
+  $("#f_type").value=d.type;
+  $("#f_status").value=d.status;
+
+  pv();
+  vv();
+
+  /* Leaflet map */
+  let map=null;
+  let marker=null;
+
+  const latInput=$("#f_lat");
+  const lngInput=$("#f_lng");
+  const msg=$("#gpsmsg");
+
+  function numberValue(v){
+    return parseFloat(String(v??"")
+      .replace(/[۰-۹]/g,c=>"۰۱۲۳۴۵۶۷۸۹".indexOf(c))
+      .replace(/[٠-٩]/g,c=>"٠١٢٣٤٥٦٧٨٩".indexOf(c))
+      .replace(/٫/g,"."));
+  }
+
+  function validPoint(lat,lng){
+    return Number.isFinite(lat)&&Number.isFinite(lng)
+      &&Math.abs(lat)<=90&&Math.abs(lng)<=180;
+  }
+
+  function setPoint(lat,lng,center=true){
+    if(!validPoint(lat,lng))return;
+
+    latInput.value=lat.toFixed(6);
+    lngInput.value=lng.toFixed(6);
+
+    const point=[lat,lng];
+
+    if(map){
+      if(!marker){
+        marker=L.marker(point,{draggable:true}).addTo(map);
+        marker.on("dragend",()=>{
+          const pos=marker.getLatLng();
+          setPoint(pos.lat,pos.lng,false);
+        });
+      }else{
+        marker.setLatLng(point);
+      }
+
+      if(center)map.panTo(point);
+    }
+
+    msg.textContent="موقعیت پروژه ثبت شد ✓";
+  }
+
+  function initMap(){
+    if(typeof L==="undefined"){
+      msg.textContent="Leaflet بارگذاری نشده است. اتصال اینترنت و ترتیب فایل‌های index.html را بررسی کنید.";
+      return;
+    }
+
+    const oldLat=numberValue(latInput.value);
+    const oldLng=numberValue(lngInput.value);
+
+    const hasPoint=validPoint(oldLat,oldLng);
+
+    const initial=hasPoint
+      ?[oldLat,oldLng]
+      :[28.9234,50.8203];
+
+    map=L.map("projectMap",{
+      zoomControl:true
+    }).setView(initial,hasPoint?16:13);
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{
+      maxZoom:19,
+      attribution:'&copy; OpenStreetMap'
+    }).addTo(map);
+
+    if(hasPoint){
+      marker=L.marker(initial,{draggable:true}).addTo(map);
+
+      marker.on("dragend",()=>{
+        const pos=marker.getLatLng();
+        setPoint(pos.lat,pos.lng,false);
+      });
+    }
+
+    map.on("click",e=>{
+      setPoint(e.latlng.lat,e.latlng.lng);
+    });
+
+    map.invalidateSize();
+    setTimeout(()=>map&&map.invalidateSize(),250);
+  }
+
+  /* Wait until the form is visible */
+  setTimeout(initMap,180);
+
+  /* Manual coordinate editing */
+  function updateFromInputs(){
+    const lat=numberValue(latInput.value);
+    const lng=numberValue(lngInput.value);
+
+    if(validPoint(lat,lng)){
+      setPoint(lat,lng);
+    }
+  }
+
+  latInput.onchange=updateFromInputs;
+  lngInput.onchange=updateFromInputs;
+
+  /* Current GPS location */
+  $("#gps").onclick=()=>{
+    msg.textContent="در حال دریافت موقعیت…";
+
+    if(!navigator.geolocation){
+      msg.textContent="مرورگر از GPS پشتیبانی نمی‌کند.";
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      r=>{
+        setPoint(
+          r.coords.latitude,
+          r.coords.longitude
+        );
+      },
+      ()=>{
+        msg.textContent="دسترسی به موقعیت ممکن نشد. مجوز مکان را بررسی کنید.";
+      },
+      {
+        enableHighAccuracy:true,
+        timeout:15000
+      }
+    );
+  };
+
+  /* Photos */
+  $("#f_ph").onchange=async e=>{
+    for(const f of e.target.files){
+      d.photos.push(await resize(f));
+    }
+    e.target.value="";
+    pv();
+  };
+
+  /* Videos */
+  $("#f_vid").onchange=e=>{
+    for(const f of e.target.files){
+      if(f.size>150*1024*1024&&
+        !confirm("این ویدیو بزرگ است (بیش از ۱۵۰ مگابایت) و ممکن است ذخیره نشود. ادامه می‌دهید؟"))continue;
+
+      d.videos.push(new Blob([f],{
+        type:f.type||"video/mp4"
+      }));
+    }
+    e.target.value="";
+    vv();
+  };
+
+  /* Cancel */
   $("#cn").onclick=()=>p?showDetail(p.id):closeSheet();
-  const fa=s=>s.replace(/[۰-۹]/g,c=>"۰۱۲۳۴۵۶۷۸۹".indexOf(c)).replace(/[٠-٩]/g,c=>"٠١٢٣٤٥٦٧٨٩".indexOf(c)).replace(/٫/g,".");
-  function parseLoc(t){t=fa(t||"");let m=t.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/)||t.match(/!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/)||t.match(/[?&](?:q|ll|query)=(-?\d+\.\d+),(-?\d+\.\d+)/)||t.match(/(-?\d{1,3}\.\d+)[\s,،;]+(-?\d{1,3}\.\d+)/);return m?[parseFloat(m[1]),parseFloat(m[2])]:null}
-  function applyLoc(t){const r=parseLoc(t),m=$("#gpsmsg");if(!r||Math.abs(r[0])>90||Math.abs(r[1])>180){m.textContent="مختصاتی پیدا نشد. اگر لینک کوتاه (goo.gl) است، لینک را باز کنید و مختصات بالای صفحه را کپی کنید.";return}$("#f_lat").value=r[0];$("#f_lng").value=r[1];m.textContent="ثبت شد ✓"}
-  $("#omap").onclick=()=>{const la=parseFloat($("#f_lat").value),lo=parseFloat($("#f_lng").value);const u=isFinite(la)&&isFinite(lo)?`https://www.google.com/maps?q=${la},${lo}`:"https://www.google.com/maps";$("#omap").href=u;try{navigator.clipboard.writeText(u)}catch(e){}$("#gpsmsg").textContent="در گوگل‌مپ نقطه را نگه دارید تا پین بیفتد، مختصات بالای صفحه را بزنید تا کپی شود، برگردید و «چسباندن موقعیت» را بزنید."};
-  $("#pst").onclick=async()=>{let t="";try{t=await navigator.clipboard.readText()}catch(e){}if(!t||!parseLoc(t))t=prompt("مختصات یا لینک گوگل‌مپ را بچسبانید:")||"";if(t)applyLoc(t)};
-  if(p)$("#rm").onclick=()=>{if(confirm("این پروژه حذف شود؟")){items=items.filter(x=>x.id!==p.id);del(p.id);closeSheet();render()}};
+
+  /* Delete */
+  if(p){
+    $("#rm").onclick=()=>{
+      if(confirm("این پروژه حذف شود؟")){
+        items=items.filter(x=>x.id!==p.id);
+        del(p.id);
+        closeSheet();
+        render();
+      }
+    };
+  }
+
+  /* Save */
   $("#sv").onclick=()=>{
-    d.name=$("#f_name").value.trim();if(!d.name){$("#f_name").focus();return}
-    d.type=$("#f_type").value;d.client=$("#f_client").value.trim();d.spec=$("#f_spec").value.trim();d.status=$("#f_status").value;d.date=$("#f_date").value.trim();d.notes=$("#f_notes").value.trim();
-    const la=parseFloat($("#f_lat").value),lo=parseFloat($("#f_lng").value);d.lat=isFinite(la)?la:null;d.lng=isFinite(lo)?lo:null;
-    const i=items.findIndex(x=>x.id===d.id);if(i>=0)items[i]=d;else items.push(d);
-    put(d);closeSheet();render()};
+    d.name=$("#f_name").value.trim();
+
+    if(!d.name){
+      $("#f_name").focus();
+      return;
+    }
+
+    d.type=$("#f_type").value;
+    d.client=$("#f_client").value.trim();
+    d.spec=$("#f_spec").value.trim();
+    d.status=$("#f_status").value;
+    d.date=$("#f_date").value.trim();
+    d.notes=$("#f_notes").value.trim();
+
+    const la=numberValue(latInput.value);
+    const lo=numberValue(lngInput.value);
+
+    if(latInput.value.trim()||lngInput.value.trim()){
+      if(!validPoint(la,lo)){
+        alert("مختصات جغرافیایی معتبر نیست. موقعیت را روی نقشه انتخاب کنید.");
+        return;
+      }
+      d.lat=la;
+      d.lng=lo;
+    }else{
+      d.lat=null;
+      d.lng=null;
+    }
+
+    const i=items.findIndex(x=>x.id===d.id);
+
+    if(i>=0)items[i]=d;
+    else items.push(d);
+
+    put(d);
+    closeSheet();
+    render();
+  };
 }
+
 function vv(){const box=$("#vv");box.innerHTML=draft.videos.map((b,i)=>`<div class="vt"><video src="${URL.createObjectURL(b)}" controls playsinline preload="metadata"></video><i data-v="${i}">×</i></div>`).join("");
   box.querySelectorAll("[data-v]").forEach(x=>x.onclick=()=>{draft.videos.splice(x.dataset.v,1);vv()})}
 function pv(){$("#pv").innerHTML=draft.photos.map((s,i)=>`<div><img src="${s}" alt=""><i data-r="${i}">×</i></div>`).join("");
